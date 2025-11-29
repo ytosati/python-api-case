@@ -1,0 +1,10 @@
+Utilizarei o framework FastAPI rodando em Uvicorn
+
+- FastAPI
+- Uvicorn
+- Motor (driver para conectar com mongodb)
+- mongodb
+- pydantic (validar email)
+# - passlib (bcrypt parar criar o hash da senha) tirei o passlib e deixei apenas bcrypt para resolver um erro de versao
+- bcrypt
+- python-jose (para trabalhar com jwt)

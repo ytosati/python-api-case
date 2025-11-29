@@ -1,3 +1,4 @@
+# ARQUIVO DE CONEXÃO COM O BANCO
 import motor.motor_asyncio
 
 # setando conexões (lembrar de alterar localhost para testes em outro pc)
