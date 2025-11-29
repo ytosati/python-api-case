@@ -26,7 +26,7 @@ class TokenResponse(BaseModel):
 
 # Criar Task
 class TaskCreate(BaseModel):
-    task: str = Field(..., description="Tarefa")
+    title: str = Field(..., description="Título da tarefa")
     description: str = Field(..., description="Descrição da tarefa")
 
 # Return da api
