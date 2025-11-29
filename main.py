@@ -2,6 +2,9 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from contextlib import asynccontextmanager
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
+from bson import ObjectId
+#import do cors middleware para facilitar futura integraçao para o frontend
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import *
 from models import *
@@ -14,14 +17,30 @@ async def lifespan(app: FastAPI):
     try:
         await database.list_collection_names()
         print("conexão bem sucedida")
-    except Exception:
-        print(f"falha ao conectar ao banco : {Exception}")
+    except Exception as e:
+        print(f"falha ao conectar ao banco : {e}")
     yield
     print("encerrando api")
 
+    
 # instanciando lifespan no app
 app = FastAPI(lifespan=lifespan)
 
+# Configuração do cors. Pesquisei as rotas mais usadas pelos principais frameworks de front end para facilitar a integraçao.
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:4200",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # setando endpoint para receber o token como login
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -57,8 +76,8 @@ def read_root():
     return {"message": "API rodando", "status": "ok"}
 
 # Endpoint de registro do usuário
-@app.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register_user(user: UserCreate):
+@app.post("/create", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def create_user(user: UserCreate):
     # logica para validar se já existe o email na base
     existing_user = await user_collection.find_one({"email": user.email})
 
@@ -103,7 +122,7 @@ async def login(login_data: LoginRequest):
 
 # --------------------------------- ENDPOINTS PROTEGIDOS --------------------------------- #
 
-# Endpoint para criar nova tarefa, validando o token
+# CREATE - Endpoint para criar nova tarefa, validando o token
 @app.post("/tasks", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(task: TaskCreate, current_user: dict = Depends(get_current_user)):
 
@@ -121,7 +140,7 @@ async def create_task(task: TaskCreate, current_user: dict = Depends(get_current
         "owner_id": task_dict["owner_id"]
     }
 
-# Endpoint que lista as tarefas do usuário
+# READ - Endpoint que lista as tarefas do usuário
 @app.get("/tasks", response_model=list[TaskResponse])
 async def list_my_tasks(current_user: dict = Depends(get_current_user)):
 
@@ -138,3 +157,41 @@ async def list_my_tasks(current_user: dict = Depends(get_current_user)):
         })
         
     return tasks
+
+# UPDATE - Endpoint para atualizar tasks, caso exista pelo id
+@app.put("/tasks/{task_id}", response_model=TaskResponse)
+async def update_task(task_id: str, task_data: TaskCreate, current_user: dict = Depends(get_current_user)):
+
+    if not ObjectId.is_valid(task_id):
+        raise HTTPException(status_code=400, detail="ID da tarefa inválido")
+
+    task = await task_collection.find_one({"_id": ObjectId(task_id), "owner_id": str(current_user["_id"])})
+    
+    if not task:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+
+    await task_collection.update_one(
+        {"_id": ObjectId(task_id)}, 
+        {"$set": task_data.model_dump()}
+    )
+
+    return {
+        "id": task_id,
+        "title": task_data.title,
+        "description": task_data.description,
+        "owner_id": str(current_user["_id"])
+    }
+
+# DELETE - Endpoint para deletar uma task
+@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task(task_id: str, current_user: dict = Depends(get_current_user)):
+
+    if not ObjectId.is_valid(task_id):
+        raise HTTPException(status_code=400, detail="ID da tarefa inválido")
+
+    result = await task_collection.delete_one({"_id": ObjectId(task_id), "owner_id": str(current_user["_id"])})
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+
+    return None
