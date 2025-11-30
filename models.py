@@ -1,12 +1,11 @@
 # ARQUIVO COM AS CLASSES TRABALHADAS PELA API
 from pydantic import BaseModel, EmailStr, Field
 
-
 # Criar conta
 class UserCreate(BaseModel):
-    name: str = Field(..., description="Nome do usuário")
-    email: EmailStr = Field(..., description="Email do usuário")
-    password: str = Field(..., description="Senha")
+    name: str = Field(..., min_length=3, description="Nome do usuário")
+    email: EmailStr = Field(..., min_length=3,description="Email do usuário")
+    password: str = Field(..., min_length=3, description="Senha")
 
 # Return da api (sem a senha)
 class UserResponse(BaseModel):

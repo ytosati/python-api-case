@@ -1,6 +1,6 @@
 # Python API Case - Gerenciador de Tarefas
 
-Api Restful desenvolvida com **FastAPI** e **MongoDB** que gera e gerencia tasks cadastradas pelo usuário de forma segura, performática e pronta para integração com Front-End.
+Estudo de Api Restful desenvolvida com **FastAPI** e **MongoDB** que gera e gerencia tasks cadastradas pelo usuário de forma segura, performática e pronta para integração com Front-End.
 
 O objetivo deste projeto é fornecer um sistema simples de gerenciamento de tarefas (tasks) onde cada usuário tem acesso privado aos seus próprios dados.
 
@@ -112,8 +112,8 @@ Body
 Body
 ```json
 {
-    "title": "Configurar mongodb",
-    "description": "Configurar mongodb na aplicação, utilizando motor"
+    "title": "Título da task",
+    "description": "Descrição da task"
 }
 ```
 #### 4. List Tasks
@@ -127,8 +127,8 @@ Não há body, a lista é retornada de acordo com o bearer token
 Body
 ```json
 {
-    "title": "titulo alterado",
-    "description": "descrição alterada"
+    "title": "Título alterado",
+    "description": "Descrição alterada"
 }
 ```
 #### 5. Delete Tasks

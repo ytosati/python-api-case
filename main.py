@@ -6,9 +6,9 @@ from bson import ObjectId
 #import do cors middleware para facilitar futura integraçao para o frontend
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import *
-from models import *
-from security import *
+from database import database, user_collection, task_collection
+from models import UserCreate, UserResponse, LoginRequest, TokenResponse, TaskCreate, TaskResponse
+from security import get_password_hash, verify_password, create_access_token, key, algoritmo
 
 # Função qeu gerencia o ciclo de vida da api para acompanhamentos e testes
 @asynccontextmanager
