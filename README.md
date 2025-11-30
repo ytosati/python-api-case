@@ -89,9 +89,9 @@ Swagger do projeto
 Body
 ```json
 {
-    "name": "joao",
-    "email": "joao@outlook.com",
-    "password": "senhadojoao"
+    "name": "exemplo",
+    "email": "exemplo@outlook.com",
+    "password": "senhaexemplo"
 }
 ```
 
@@ -101,8 +101,8 @@ Body
 Body
 ```json
 {
-    "email": "joao@outlook.com",
-    "password": "senhadojoao"
+    "email": "exemplo@outlook.com",
+    "password": "senhaexemplo"
 }
 ```
 
@@ -134,7 +134,7 @@ Body
 #### 5. Delete Tasks
 * **DELETE** `http://127.0.0.1:8000/task/{TaskID}`.
 
-Não há body, a lista é retornada de acordo com o bearer token no endpoint
+Não há body, a task é deletada de acordo com o ID no endpoint
 
 ## 📂 Estrutura do Projeto
 
